@@ -62,6 +62,15 @@ extension ViewController: UICollectionViewDragDelegate {
     func collectionView(_ collectionView: UICollectionView, itemsForBeginning session: UIDragSession, at indexPath: IndexPath) -> [UIDragItem] {
         let itemProvider = NSItemProvider()
         let dragItem = UIDragItem(itemProvider: itemProvider)
+        
+        dragItem.previewProvider = {
+            let label = UILabel(frame: CGRect(origin: .zero, size: CGSize(width: 200, height: 100)))
+            label.backgroundColor = self.colors[indexPath.item]
+            label.text = "Drag~!"
+            label.textAlignment = .center
+            return UIDragPreview(view: label)
+        }
+        
         return [dragItem]
     }
 }
