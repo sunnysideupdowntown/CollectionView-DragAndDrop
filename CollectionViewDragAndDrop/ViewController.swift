@@ -27,6 +27,9 @@ class ViewController: UIViewController {
         collectionView.register(UICollectionViewCell.self, forCellWithReuseIdentifier: "cell")
         collectionView.dataSource = self
         
+        collectionView.dragInteractionEnabled = true
+        collectionView.dragDelegate = self
+        
         self.view.addSubview(collectionView)
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
@@ -50,5 +53,15 @@ extension ViewController: UICollectionViewDataSource {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath)
         cell.backgroundColor = self.colors[indexPath.item]
         return cell
+    }
+}
+
+// MARK: - UICollectionViewDragDelegate
+
+extension ViewController: UICollectionViewDragDelegate {
+    func collectionView(_ collectionView: UICollectionView, itemsForBeginning session: UIDragSession, at indexPath: IndexPath) -> [UIDragItem] {
+        let itemProvider = NSItemProvider()
+        let dragItem = UIDragItem(itemProvider: itemProvider)
+        return [dragItem]
     }
 }
