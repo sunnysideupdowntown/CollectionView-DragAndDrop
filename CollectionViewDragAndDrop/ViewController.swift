@@ -30,6 +30,8 @@ class ViewController: UIViewController {
         collectionView.dragInteractionEnabled = true
         collectionView.dragDelegate = self
         
+        collectionView.dropDelegate = self
+        
         self.view.addSubview(collectionView)
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
@@ -72,5 +74,37 @@ extension ViewController: UICollectionViewDragDelegate {
         }
         
         return [dragItem]
+    }
+}
+
+// MARK: - UICollectionViewDropDelegate
+
+extension ViewController: UICollectionViewDropDelegate {
+    
+    func collectionView(_ collectionView: UICollectionView, dropSessionDidUpdate session: UIDropSession, withDestinationIndexPath destinationIndexPath: IndexPath?) -> UICollectionViewDropProposal {
+        return UICollectionViewDropProposal(operation: .move, intent: .insertAtDestinationIndexPath)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, performDropWith coordinator: UICollectionViewDropCoordinator) {
+        
+        if let item = coordinator.items.first,
+           let srcIndexPath = item.sourceIndexPath,
+           let destIndexPath = coordinator.destinationIndexPath {
+            
+            // Data update
+            //
+            if srcIndexPath.item < destIndexPath.item {
+                self.colors.move(fromOffsets: [srcIndexPath.item], toOffset: destIndexPath.item + 1)
+            } else {
+                self.colors.move(fromOffsets: [srcIndexPath.item], toOffset: destIndexPath.item)
+            }
+            
+            // UI update
+            //
+            collectionView.performBatchUpdates {
+                collectionView.deleteItems(at: [srcIndexPath])
+                collectionView.insertItems(at: [destIndexPath])
+            }
+        }
     }
 }
